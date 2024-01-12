@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}All posts{% endblock %}
+
+{% block body %}
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+    {% if microPosts|length > 0 %}
+    {% for microPost in microPosts %}
+    {{include("micro_post/_post.html.twig",{microPost:microPost})}}
+    {% endfor %}
+    {% else %}
+    There are no messages
+    {% endif %}
+</div>
+{% endblock %}

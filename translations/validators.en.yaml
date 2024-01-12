@@ -1,0 +1,5 @@
+# translations/validators.en.yaml
+
+validators:
+  Please enter title: "Please enter the title"
+  Please enter post text: "Please enter the post text"

@@ -1,0 +1,25 @@
+<div class="mb-4"> 
+        <div class="text-2xl">
+        <a href="{{path('app_micro_post_show',{"id":microPost.id})}}"> 
+            {{microPost.title}}
+        </a>
+        </div>
+        <div class"text-xl dark:text-gray-400">
+            {{microPost.text}}
+        </div>
+        <div class="text-gray-500 dark:text-gray-400">
+            {{microPost.created|date("M j,Y")}}
+        </div>
+        <div>
+            <a href="#">Like <span class="px-2 rounded-md bg-gray-200 dark:bg-gray-700">0</span></a>
+        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+        <a href="#">user@email.com</a>
+        </div>
+        <div class="flex">
+         <a href="{{path('app_micro_post_edit',{id:microPost.id})}}" class="mr-2">Edit</a>
+        <a href="{{path('app_micro_post_comment',{id:microPost.id})}}">Comment
+        <span class="px-2 rounded-md bg-gray-200 dark:bg-gray-700">{{microPost.comments.count}}</span></a>
+
+        </div>
+</div>
