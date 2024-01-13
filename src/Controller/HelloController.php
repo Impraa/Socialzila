@@ -20,7 +20,7 @@ class HelloController extends AbstractController
         ["message" => "bok", "created" => "2022/05/12"]
     ];
 
-    #[Route("/", name: "app_index")]
+    #[Route("/mac", name: "app_index")]
     public function index(EntityManagerInterface $entityManager, MicroPostRepository $microPostRepository)
     {
         /*    $post = new MicroPost();
@@ -60,6 +60,5 @@ class HelloController extends AbstractController
             'hello/showOne.html.twig',
             ['message' => $this->messages[$id]]
         );
-
     }
 }

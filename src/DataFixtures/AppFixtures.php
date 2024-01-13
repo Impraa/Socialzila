@@ -14,7 +14,6 @@ class AppFixtures extends Fixture
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher
     ) {
-
     }
     public function load(ObjectManager $manager): void
     {
@@ -35,18 +34,21 @@ class AppFixtures extends Fixture
         $microPost->setTitle("Welcome to socialzila");
         $microPost->setText("Welcome to socialzila text");
         $microPost->setCreated(new DateTime());
+        $microPost->setAuthor($user1);
         $manager->persist($microPost);
 
         $microPost1 = new MicroPost();
         $microPost1->setTitle("Welcome to socialzila again!");
         $microPost1->setText("Welcome to socialzila text again!");
         $microPost1->setCreated(new DateTime());
+        $microPost1->setAuthor($user2);
         $manager->persist($microPost1);
 
         $microPost2 = new MicroPost();
         $microPost2->setTitle("Welcome to socialzila again again!");
         $microPost2->setText("Welcome to socialzila text again again!");
         $microPost2->setCreated(new DateTime());
+        $microPost2->setAuthor($user2);
         $manager->persist($microPost2);
 
         $manager->flush();

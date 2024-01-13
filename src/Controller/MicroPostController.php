@@ -2,22 +2,24 @@
 
 namespace App\Controller;
 
-use App\Entity\Comment;
-use App\Form\CommentType;
 use DateTime;
+use App\Entity\User;
+use App\Entity\Comment;
 use App\Entity\MicroPost;
+use App\Form\CommentType;
 use App\Form\MicroPostType;
 use App\Repository\MicroPostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MicroPostController extends AbstractController
 {
-    #[Route('/micro-post', name: 'app_micro_post')]
+    #[Route('/', name: 'app_micro_post')]
     public function index(MicroPostRepository $microPost): Response
     {
         /*  $microPost = new MicroPost();
@@ -35,7 +37,28 @@ class MicroPostController extends AbstractController
     }
 
 
+    #[Route('/micro-post/top-liked', name: 'app_micro_post_top_liked')]
+    public function topLiked(MicroPostRepository $microPost): Response
+    {
+        return $this->render('micro_post/top_liked.html.twig', [
+            'microPosts' => $microPost->findAllWithMinLikes(1),
+        ]);
+    }
+
+    #[Route("/micro-post/follows", name: 'app_micro_post_follows')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function follows(MicroPostRepository $microPost): Response
+    {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        return $this->render('micro_post/follows.html.twig', [
+            'microPosts' => $microPost->findAllByAuthors($currentUser->getFollows()),
+        ]);
+    }
+
+
     #[Route('/micro-post/new', name: 'app_micro_post_add')]
+    #[IsGranted('ROLE_WRITER')]
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(MicroPostType::class, new MicroPost());
@@ -45,6 +68,7 @@ class MicroPostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $microPost = $form->getData();
             $microPost->setCreated(new DateTime());
+            $microPost->setAuthor($this->getUser());
 
             $entityManager->persist($microPost);
             $entityManager->flush();
@@ -58,6 +82,7 @@ class MicroPostController extends AbstractController
     }
 
     #[Route('/micro-post/edit/{id}', name: 'app_micro_post_edit')]
+    #[IsGranted(MicroPost::EDIT, "microPost")]
     public function edit(MicroPost $microPost, Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(MicroPostType::class, $microPost);
@@ -79,6 +104,7 @@ class MicroPostController extends AbstractController
     }
 
     #[Route('/micro-post/{id}/comment', name: 'app_micro_post_comment')]
+    #[IsGranted('ROLE_COMMENTER')]
     public function addComment(MicroPost $microPost, Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CommentType::class, new Comment());
@@ -88,7 +114,7 @@ class MicroPostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $comment = $form->getData();
-
+            $comment->setAuthor($this->getUser());
             $comment->setMicroPost($microPost);
             $entityManager->persist($comment);
             $entityManager->flush();
@@ -102,12 +128,11 @@ class MicroPostController extends AbstractController
     }
 
     #[Route('/micro-post/{id}', name: 'app_micro_post_show')]
+    #[IsGranted(MicroPost::VIEW, 'microPost')]
     public function showOne(MicroPost $microPost): Response
     {
         return $this->render('micro_post/show.html.twig', [
             'microPost' => $microPost,
         ]);
     }
-
-
 }
